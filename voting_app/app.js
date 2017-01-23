@@ -1,7 +1,7 @@
 const ProductList = React.createClass({
     render: () => {
         return(
-            <div className='ui-themes'>
+            <div className='ui items'>
                 <Product />
             </div>
         );
