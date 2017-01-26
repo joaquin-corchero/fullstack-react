@@ -49,7 +49,7 @@ const TimerDashboard = React.createClass({
             timers: this.state.timers.filter(t => t.id !== timerId),
         });
 
-        client.deleteTimer(timerId);
+        client.deleteTimer({id: timerId});
     },
     handleStartClick: function (timerId) {
         this.startTimer(timerId);
