@@ -19,6 +19,8 @@ const TimerDashboard = React.createClass({
         this.setState({
             timers: this.state.timers.concat(t)
         });
+
+        client.createTimer(t);
     },
     handleEditFormSubmit: function(attrs){
         this.updateTimer(attrs);
@@ -36,6 +38,8 @@ const TimerDashboard = React.createClass({
                 }
             })
         });
+
+        client.updateTimer(attrs);
     },
     handleTrashClick: function(timerId){
         this.deleteTimer(timerId)
@@ -44,6 +48,8 @@ const TimerDashboard = React.createClass({
         this.setState({
             timers: this.state.timers.filter(t => t.id !== timerId),
         });
+
+        client.deleteTimer(timerId);
     },
     handleStartClick: function (timerId) {
         this.startTimer(timerId);
