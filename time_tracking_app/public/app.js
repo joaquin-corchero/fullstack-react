@@ -27,7 +27,7 @@ const TimerDashboard = React.createClass({
                         timers={this.state.timers}
                     />
                     <ToggleableTimerForm
-                        isOpen={true}
+                        isOpen={false}
                     />
                 </div>
             </div>
@@ -37,7 +37,7 @@ const TimerDashboard = React.createClass({
 
 const EditableTimerList = React.createClass({
     render: function() {
-        const timers = this.props.timers.map((timer) => {
+        const timers = this.props.timers.map((timer) => (
             <EditableTimer
                 key={timer.id}
                 id={timer.id}
@@ -46,7 +46,7 @@ const EditableTimerList = React.createClass({
                 elapsed={timer.elapsed}
                 runningSince={timer.runningSince}
             />
-        });
+        ));
         return (
             <div id='timers'>
                 {timers}
@@ -56,18 +56,24 @@ const EditableTimerList = React.createClass({
 });
 
 const EditableTimer = React.createClass({
+    getInitialState: function(){
+        return {
+            editFormOpen: false
+        };
+    },
     render: function(){
         if(this.props.editFormOpen){
             return (
                 <TimerForm
+                    id={this.props.id}
                     title={this.props.title}
                     project={this.props.project}
                 />
             );
-        }else
-        {
+        }else{
             return(
                 <Timer
+                    id={this.props.id}
                     title={this.props.title}
                     project={this.props.project}
                     elapsed={this.props.elapsed}
