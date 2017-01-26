@@ -61,6 +61,11 @@ const TimerDashboard = React.createClass({
                 }
             }),
         });
+
+        client.startTimer({
+            id: timerId,
+            start: now
+        });
     },
     handleStopClick: function (timerId) {
         this.stopTimer(timerId);
@@ -80,6 +85,11 @@ const TimerDashboard = React.createClass({
                     return timer;
                 }
             })
+        });
+
+        client.stopTimer({
+            id: timerId,
+            stop: now
         });
     },
     render: function() {
