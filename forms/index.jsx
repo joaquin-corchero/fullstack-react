@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 
 import One from './basic-button.jsx';
-import Two from './basic-input.jsx';
+import Two from './inputs.jsx';
 const routes = [
   One, Two
 ];
