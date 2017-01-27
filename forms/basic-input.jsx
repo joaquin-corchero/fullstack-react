@@ -8,17 +8,25 @@ module.exports = React.createClass({
 
   getInitialState() {
     return { 
-          names: [],
-          name: ''
+          people: [],
+          fields: {
+            name: '',
+            email: ''
+          }
        };
   },
   onFormSubmit(evt) {
-    const names = [ ...this.state.names, this.state.name ];
-    this.setState({ names: names, name: '' });
+    const people = [ ...this.state.people, this.state.fields ];
+    this.setState({
+      people: people, 
+      fields: {name: '', email: '' }
+    });
     evt.preventDefault();
   },
-  onNameChange(evt){
-    this.setState({ name: evt.target.value });
+  fieldChange(evt){
+    const fields = this.state.fields;
+    fields[evt.target.name] = evt.target.value;
+    this.setState({fields});
   },
   render() {
     return (
@@ -27,9 +35,16 @@ module.exports = React.createClass({
 
         <form onSubmit={this.onFormSubmit}>
           <input
+            name='name'
             placeholder='Name'
-            value={this.state.name}
-            onChange={this.onNameChange}
+            value={this.state.fields.name}
+            onChange={this.fieldChange}
+          />
+          <input
+            name='email'
+            placeholder='Email address'
+            value={this.state.fields.email}
+            onChange={this.fieldChange}
           />
 
           <input type='submit' />
@@ -38,7 +53,7 @@ module.exports = React.createClass({
         <div>
           <h3>Names</h3>
           <ul>
-            { this.state.names.map((name, i) => <li key={i}>{name}</li>) }
+            { this.state.people.map((person, i) => <li key={i}>{person.name} ({person.email})</li>) }
           </ul>
         </div>
       </div>
