@@ -2,41 +2,44 @@ import React, { PropTypes } from 'react';
 
 module.exports = React.createClass({
   propTypes: {
-    placeHolder: PropTypes.string,
-    name: PropTypes.string,
+    placeholder: PropTypes.string,
+    name: PropTypes.string.isRequired,
     value: PropTypes.string,
     validate: PropTypes.func,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
   },
-  getInitialState(){
-    return{
+
+  getInitialState() {
+    return {
       value: this.props.value,
-      error: false
-    }
+      error: false,
+    };
   },
-  componentWillReceiveProps(update){
-    this.setState({value: update.value});
+
+  componentWillReceiveProps(update) {
+    this.setState({ value: update.value });
   },
-  render(){
-    return(
+
+  onChange(evt) {
+    const name = this.props.name;
+    const value = evt.target.value;
+    const error = this.props.validate ? this.props.validate(value) : false;
+
+    this.setState({ value, error });
+
+    this.props.onChange({ name, value, error });
+  },
+
+  render() {
+    return (
       <div>
         <input
-          placeholder={this.props.placeHolder}
-          value={this.props.value}
-          onChange={this.props.onChange}
+          placeholder={this.props.placeholder}
+          value={this.state.value}
+          onChange={this.onChange}
         />
-        <span style={{color:'red'}}>{this.state.error}</span>
+        <span style={{ color: 'red' }}>{ this.state.error }</span>
       </div>
     );
   },
-  onChange(evt){
-    const name = this.props.name;
-    const value = this.props.value;
-    //If there was a validation method passed in it gets validated, otherwise no error set
-    const error = this.props.validate ? this.props.validate(value) : false;
-
-    this.setState({value, error});
-
-    this.props.onChange({name, value, error});
-  }
 });
