@@ -16,13 +16,14 @@ module.exports = React.createClass({
     };
   },
 
-  componentWillReceiveProps(update) {
+  componentWillReceiveProps(update) {//parent component van update the state
     this.setState({ value: update.value });
   },
 
   onChange(evt) {
     const name = this.props.name;
     const value = evt.target.value;
+    //if no function to validate is passed false is returned
     const error = this.props.validate ? this.props.validate(value) : false;
 
     this.setState({ value, error });
