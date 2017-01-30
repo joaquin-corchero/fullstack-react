@@ -2,31 +2,54 @@ import React from 'react';
 import isEmail from 'validator/lib/isEmail';
 
 const Field = require('./field-component.jsx');
+const CourseSelect = require('./course-select-component.jsx');
 
 const content = document.createElement('div');
 document.body.appendChild(content);
 
+let apiClient;
 module.exports = React.createClass({
   displayName: __filename.split('/').slice(-1)[0],
 
-  getInitialState() {
+  getInitialState: function () {
     return {
       fields: {},
       fieldErrors: {},
       people: [],
+      _loading: false,
+      _saveStatus: 'READY',
     };
   },
 
+  componentWillMount() {
+    this.setState({ _loading: true });
+    apiClient.loadPeople().then((people) => {
+      this.setState({ _loading: false, people: people });
+    });
+  },
+
   onFormSubmit(evt) {
-    const people = this.state.people;
     const person = this.state.fields;
 
     evt.preventDefault();
 
     if (this.validate()) return;
 
-    people.push(person);
-    this.setState({ people, fields: {} });
+    const people = [ ...this.state.people, person ];
+
+    this.setState({ _saveStatus: 'SAVING' });
+    apiClient.savePeople(people)
+      .then(() => {
+        this.setState({
+          people: people,
+          fields: {},
+          _saveStatus: 'SUCCESS',
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        this.setState({ _saveStatus: 'ERROR' });
+      });
   },
 
   onInputChange({ name, value, error }) {
@@ -36,7 +59,7 @@ module.exports = React.createClass({
     fields[name] = value;
     fieldErrors[name] = error;
 
-    this.setState({ fields, fieldErrors });
+    this.setState({ fields, fieldErrors, _saveStatus: 'READY' });
   },
 
   validate() {
@@ -46,12 +69,18 @@ module.exports = React.createClass({
 
     if (!person.name) return true;
     if (!person.email) return true;
+    if (!person.course) return true;
+    if (!person.department) return true;
     if (errMessages.length) return true;
 
     return false;
   },
 
   render() {
+    if (this.state._loading) {
+      return <img alt='loading' src='/img/loading.gif' />;
+    }
+
     return (
       <div>
         <h1>Sign Up Sheet</h1>
@@ -78,14 +107,36 @@ module.exports = React.createClass({
 
           <br />
 
-          <input type='submit' disabled={this.validate()} />
+          <CourseSelect
+            department={this.state.fields.department}
+            course={this.state.fields.course}
+            onChange={this.onInputChange}
+          />
+
+          <br />
+
+          {{
+            SAVING: <input value='Saving...' type='submit' disabled />,
+            SUCCESS: <input value='Saved!' type='submit' disabled />,
+            ERROR: <input
+              value='Save Failed - Retry?'
+              type='submit'
+              disabled={this.validate()}
+            />,
+            READY: <input
+              value='Submit'
+              type='submit'
+              disabled={this.validate()}
+            />,
+          }[this.state._saveStatus]}
+
         </form>
 
         <div>
           <h3>People</h3>
           <ul>
-            { this.state.people.map(({ name, email }, i) =>
-              <li key={i}>{name} ({email})</li>
+            { this.state.people.map(({ name, email, department, course }, i) =>
+              <li key={i}>{[ name, email, department, course ].join(' - ')}</li>
             ) }
           </ul>
         </div>
@@ -93,3 +144,30 @@ module.exports = React.createClass({
     );
   },
 });
+
+apiClient = {
+  loadPeople: function () {
+    return {
+      then: function (cb) {
+        setTimeout(() => {
+          cb(JSON.parse(localStorage.people || '[]'));
+        }, 1000);
+      },
+    };
+  },
+
+  savePeople: function (people) {
+    const success = !!(this.count++ % 2);
+
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (!success) return reject({ success });
+
+        localStorage.people = JSON.stringify(people);
+        return resolve({ success });
+      }, 1000);
+    });
+  },
+
+  count: 1,
+};
