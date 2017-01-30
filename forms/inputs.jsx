@@ -42,9 +42,12 @@ module.exports = React.createClass({
       .then(() => {
         this.setState({
           people: people,
-          fields: {},
+          fields: { name: '', email: ''},
           _saveStatus: 'SUCCESS',
         });
+      })
+      .then(() =>{
+        console.log(this.state.fields);
       })
       .catch((err) => {
         console.error(err);
